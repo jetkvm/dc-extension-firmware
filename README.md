@@ -1,9 +1,9 @@
 <div align="center">
-    <img alt="JetKVM DC logo" src="https://jetkvm.com/dc-logo.png" height="48">
+    <img alt="JetKVM logo" src="https://jetkvm.com/logo-blue.png" height="28">
 
-### DC Power Extension Firware for JetKVM
+### JetKVM DC Power Extension Firmware
 
-[Discord](https://discord.gg/pWpGMMEBCK) | [Website](https://jetkvm.com) | [Issues](https://github.com/jetkvm/kvm/issues) | [Docs](https://jetkvm.com/docs)
+[Discord](https://jetkvm.com/discord) | [Website](https://jetkvm.com) | [Issues](https://github.com/jetkvm/cloud-api/issues) | [Docs](https://jetkvm.com/docs)
 
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/jetkvm.svg?style=social&label=Follow%20%40JetKVM)](https://twitter.com/jetkvm)
 
