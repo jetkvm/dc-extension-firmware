@@ -294,7 +294,7 @@ int main()
 
     gpio_init(PWR_PIN);
     gpio_set_dir(PWR_PIN, GPIO_OUT);
-    gpio_put(PWR_PIN, 0);
+    gpio_put(PWR_PIN, 1);
     
     power_init();
 
