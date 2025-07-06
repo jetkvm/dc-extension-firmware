@@ -5,6 +5,7 @@
 #include "hardware/gpio.h"
 #include "hardware/i2c.h"
 #include "driver_ina219.h"
+#include "flash_store.h"
 
 #define UART_ID uart0
 #define BAUD_RATE 115200
@@ -62,17 +63,30 @@ void gpio_callback(uint gpio, uint32_t events)
 static char uart_buf[UART_BUF_SIZE];
 static int uart_buf_pos = 0;
 
+void set_power_pin(bool value){
+    gpio_put(PWR_PIN, value);
+    set_power_state(value);
+}
 
 void on_uart_line(const char *line)
 {
     printf("UART LINE: %s\n", line);
     if (strcmp(line, "PWR_ON\n") == 0) {
-        gpio_put(PWR_PIN, 1);
+        set_power_pin(1);
         printf("Power ON\n");
     }
     else if (strcmp(line, "PWR_OFF\n") == 0) {
-        gpio_put(PWR_PIN, 0);
+        set_power_pin(0);
         printf("Power OFF\n");
+    }
+    else if (strcmp(line, "RESTORE_MODE_OFF\n") == 0) {
+        set_restore_mode(RESTORE_MODE_OFF);
+    }
+    else if (strcmp(line, "RESTORE_MODE_ON\n") == 0) {
+        set_restore_mode(RESTORE_MODE_ON);
+    }
+    else if (strcmp(line, "RESTORE_MODE_LAST_STATE\n") == 0) {
+        set_restore_mode(RESTORE_MODE_LAST_STATE);
     }
 }
 
@@ -294,8 +308,17 @@ int main()
 
     gpio_init(PWR_PIN);
     gpio_set_dir(PWR_PIN, GPIO_OUT);
-    gpio_put(PWR_PIN, 0);
     
+    flash_store_init();
+    uint8_t restore_mode = get_restore_mode();
+    if (restore_mode == RESTORE_MODE_LAST_STATE){
+        uint8_t last_power_state = get_power_state();
+        gpio_put(PWR_PIN, last_power_state);
+    } else {
+        gpio_put(PWR_PIN, restore_mode);
+    }
+    
+
     power_init();
 
     float voltage;
@@ -309,12 +332,14 @@ int main()
         printf("Uptime: %llu s\n", time_us_64() / 1000000);
         if (ina219_basic_read(&voltage, &current, &power) == 0) {
             int power_state = gpio_get(PWR_PIN);
+            uint8_t restore_mode = get_restore_mode();
+
             printf("Power state: %d\n", power_state);
             printf("Voltage: %.2f mV\n", voltage);
             printf("Current: %.2f mA\n", current);
             printf("Power: %.2f mW\n", power);
             char uart_msg[128];
-            snprintf(uart_msg, sizeof(uart_msg), "%d;%.2f;%.2f;%.2f\n", power_state, voltage, current, power);
+            snprintf(uart_msg, sizeof(uart_msg), "%d;%.2f;%.2f;%.2f;%d\n", power_state, voltage, current, power, restore_mode);
             uart_puts(UART_ID, uart_msg);
         } else {
             printf("Error reading INA219\n");
