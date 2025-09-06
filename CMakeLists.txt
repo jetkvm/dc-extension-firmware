@@ -33,12 +33,12 @@ project(jetkvm-dc C CXX ASM)
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
-# Add executable. Default name is the project name, version 0.1
+# Add executable. Default name is the project name.
 
-add_executable(jetkvm-dc jetkvm-dc.c driver_ina219.c)
+add_executable(jetkvm-dc jetkvm-dc.c driver_ina219.c flash_store.c)
 
 pico_set_program_name(jetkvm-dc "jetkvm-dc")
-pico_set_program_version(jetkvm-dc "0.1")
+pico_set_program_version(jetkvm-dc "0.2")
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(jetkvm-dc 0)
