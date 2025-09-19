@@ -38,7 +38,7 @@ pico_sdk_init()
 add_executable(jetkvm-dc jetkvm-dc.c driver_ina219.c flash_store.c)
 
 pico_set_program_name(jetkvm-dc "jetkvm-dc")
-pico_set_program_version(jetkvm-dc "0.2")
+pico_set_program_version(jetkvm-dc "0.2.0")
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(jetkvm-dc 0)
