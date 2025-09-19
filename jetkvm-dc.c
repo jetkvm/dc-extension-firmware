@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
+#include "pico/binary_info.h"
 #include "hardware/watchdog.h"
 #include "hardware/uart.h"
 #include "hardware/gpio.h"
@@ -17,6 +18,24 @@
 
 #define INA219_I2C_SDA_PIN 8
 #define INA219_I2C_SCL_PIN 9
+
+#ifdef PICO_PROGRAM_NAME
+#define JETKVM_NAME PICO_PROGRAM_NAME
+#else
+#define JETKVM_NAME "jetkvm-dc"
+#endif
+
+#ifdef PICO_PROGRAM_VERSION_STRING
+#define JETKVM_VERSION PICO_PROGRAM_VERSION_STRING
+#else
+#define JETKVM_VERSION "unknown"
+#endif
+
+#ifdef PICO_PROGRAM_BUILD_DATE
+#define JETKVM_BUILD_DATE PICO_PROGRAM_BUILD_DATE
+#else
+#define JETKVM_BUILD_DATE __DATE__
+#endif
 
 static const char *gpio_irq_str[] = {
     "LEVEL_LOW",  // 0x1
@@ -68,6 +87,19 @@ void set_power_pin(bool value){
     set_power_state(value);
 }
 
+void uart_send_version() {
+    char version_str[128];
+    snprintf(
+        version_str,
+        sizeof(version_str),
+        "EXTVER;%s;%s\n",
+        JETKVM_NAME,
+        JETKVM_VERSION,
+        JETKVM_BUILD_DATE
+    );
+    uart_puts(UART_ID, version_str);
+}
+
 void on_uart_line(const char *line)
 {
     printf("UART LINE: %s\n", line);
@@ -87,6 +119,8 @@ void on_uart_line(const char *line)
     }
     else if (strcmp(line, "RESTORE_MODE_LAST_STATE\n") == 0) {
         set_restore_mode(RESTORE_MODE_LAST_STATE);
+    } else if (strcmp(line, "VERSION\n") == 0) {
+        uart_send_version();
     }
 }
 
