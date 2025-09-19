@@ -39,7 +39,7 @@ jobs:
         echo "PICO_SDK_PATH=$HOME/pico-sdk" >> $GITHUB_ENV
 
     - name: Build firmware
-      run: |        
+      run: |
         cmake . -DPICO_SDK_PATH=$PICO_SDK_PATH
         make -j$(nproc)
 
