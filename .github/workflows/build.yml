@@ -51,6 +51,7 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
+        name: jetkvm-dc-extension-${{ github.sha }}.uf2
         path: |
           *.uf2
         retention-days: 30
